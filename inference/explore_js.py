@@ -5,6 +5,8 @@ from datetime import datetime
 prices = []
 dates = []
 
+group_model = {"DH1":(2321,2214)}
+
 for years in [2018, 2019, 2020, 2021]:
     with open("inference/data/pp-{}.csv".format(years)) as r:
         lines = [l for l in r.readlines()]
@@ -15,6 +17,3 @@ for years in [2018, 2019, 2020, 2021]:
             dates.append(datetime.strptime(spl[2][1:-1], "%Y-%m-%d %H:%M"))
 
 prices = np.array(prices)
-
-plt.scatter(dates, np.log(prices))
-plt.savefig("initial-scatter.png")
