@@ -2,7 +2,14 @@ import pickle
 import numpy as np
 
 def remove_numeric(s):
-    return "".join([c for c in s if c not in "0123456789"])
+    new = ""
+
+    for c in s:
+        if c not in "0123456789":
+            new += c
+        else:
+            break
+    return "".join(new)
 
 
 class Valuator:
@@ -12,8 +19,8 @@ class Valuator:
         if model_type == "linear":
             with open("inference/models/linear.bin", "rb") as file:
                 self.linear_model = pickle.load(file)
-        if model_type == "postcode":
-            with open("inference/models/group.bin", "rb") as file:
+        if model_type == "group":
+            with open("inference/models/groups.bin", "rb") as file:
                 self.group_model = pickle.load(file)
     
     def valuate(self, property_data):
