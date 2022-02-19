@@ -24,6 +24,6 @@ class Valuator:
                 mean, std = self.group_model[property_data["district"]]
                 return (np.exp(mean - std), np.exp(mean + std))
 
-valuator = Valuator()
 
-print(valuator.valuate(None))
+
+
