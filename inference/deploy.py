@@ -4,6 +4,7 @@ import numpy as np
 def remove_numeric(s):
     return "".join([c for c in s if c not in "0123456789"])
 
+
 class Valuator:
     def __init__(self, model_type="linear"):
         self.model_type = model_type
