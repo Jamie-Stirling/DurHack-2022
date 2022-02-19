@@ -5,12 +5,16 @@ from datetime import datetime
 prices = []
 dates = []
 
-with open("inference/data/pp-2018.csv") as r:
-    for line in r.readlines():
-        spl = line.split(",")
-        prices.append(float(spl[1][1:-1]))
-        dates.append(datetime.strptime(spl[2][1:-1], "%Y-%m-%d %H:%M"))
+for years in [2018, 2019, 2020, 2021]:
+    with open("inference/data/pp-{}.csv".format(years)) as r:
+        lines = [l for l in r.readlines()]
+        np.random.shuffle(lines)
+        for line in lines[:2000]:
+            spl = line.split(",")
+            prices.append(float(spl[1][1:-1]))
+            dates.append(datetime.strptime(spl[2][1:-1], "%Y-%m-%d %H:%M"))
+
 prices = np.array(prices)
 
-plt.hist(np.log(prices), bins=64)
-plt.show()
+plt.scatter(dates, np.log(prices))
+plt.savefig("initial-scatter.png")
