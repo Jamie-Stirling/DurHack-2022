@@ -1,3 +1,4 @@
 Flask==2.0.3
 numpy==1.21.3
 sklearn==0.0
+matplotlib==3.4.3
