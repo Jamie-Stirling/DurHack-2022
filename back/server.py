@@ -29,7 +29,7 @@ def testNull(var): #Tests for blank input
     else:
         return False
 
-valuator = Valuator("postcode")
+valuator = Valuator("group")
 app = Flask(__name__)
 
 
