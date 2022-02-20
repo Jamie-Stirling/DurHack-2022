@@ -1,6 +1,8 @@
 
 from flask import Flask, request,render_template, redirect, url_for
+from ..inference.deploy import Valuator, remove_numeric
 
+from inference.models.covert_to_currency import convert_int_to_pounds
 
 def testStr(var): #Test for or string
     if type(var) == type('string'):
@@ -27,7 +29,7 @@ def testNull(var): #Tests for blank input
     else:
         return False
 
-
+valuator = Valuator("postcode")
 app = Flask(__name__)
 
 
@@ -62,8 +64,9 @@ def home():
             bedrooms = int(bedrooms)
             # Find house value
             # price = calculations(postcode,bedrooms,houseType,Garden)
-            price_lower = 1000
-            price_upper = 5325
+            price_lower, price_upper = valuator.valuate({"district":remove_numeric(postcode.split(" ")[0])})
+            price_lower = convert_int_to_pounds(int(price_lower))
+            price_upper = convert_int_to_pounds(int(price_upper))
             return render_template('value.html', price_lower=price_lower, price_upper=price_upper) #Sends value of house to 2nd page
 
 @app.route("/result", methods=['GET', 'POST'])

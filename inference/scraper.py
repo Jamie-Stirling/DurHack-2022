@@ -38,6 +38,6 @@ for district in districts[:100]:
             price = listing.find("div", {"class":"result__details__price"}).text
 
             items = [i.text for i in listing.find_all("span", {"class":"summary-item"})][2:]
-            line = district, rooms, price, items
+            line = rooms + "," + price + str(items)
         except Exception as e:
             pass
