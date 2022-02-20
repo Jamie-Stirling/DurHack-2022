@@ -33,7 +33,7 @@ class Valuator:
 
         mean =  (group_mean / group_std + linear_estimate / 0.683409027789194) / (1/group_std+1/0.683409027789194)
 
-        std = 1/(1/group_std + 1/0.683409027789194) 
+        std = 1/(1/group_std + 1/0.6306725040115735) 
         print(mean, std)
 
         #combine estimates

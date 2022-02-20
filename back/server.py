@@ -66,7 +66,7 @@ def home():
             
             # Find house value
             # price = calculations(postcode,bedrooms,houseType,Garden)
-            keywords = req["Keywords"].split(",")
+            keywords = [houseType.lower()] + [k.lower() for k in req["Keywords"].split(",")]
             price_lower, price_upper = valuator.valuate({"district":remove_numeric(postcode.split(" ")[0]), "x":encode_x(bedrooms, keywords, keyword_map)})
             price_lower = convert_int_to_pounds(int(price_lower))
             price_upper = convert_int_to_pounds(int(price_upper))

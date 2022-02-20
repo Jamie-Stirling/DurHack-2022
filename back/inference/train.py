@@ -13,9 +13,10 @@ except:
 def encode_x(bedrooms, keywords, keyword_map):
     arr = [0] * len(keyword_map)
     for keyword in keywords:
+        keyword = keyword.lower()
         if keyword in keyword_map:
             arr[keyword_map[keyword]] = 1
-    return np.array([float(bedrooms)] + arr)
+    return np.array([(float(bedrooms) * 0.2 + 3.2 * 0.8)] + arr)
 
 def prepare_xy(lines):
     x = []
@@ -28,6 +29,7 @@ def prepare_xy(lines):
         rooms = int(spl[1])
         keywords = spl[2:]
         for keyword in keywords:
+            keyword = keyword.lower()
             if keyword not in keyword_map:
                 keyword_map[keyword] = len(keyword_map)
         # encode binary features
@@ -44,7 +46,7 @@ def prepare_xy(lines):
     return np.array(x), np.array(y)
 
 def train_linear():
-    model = MLPRegressor((50,100), max_iter=1000)
+    model = MLPRegressor((15), max_iter=1000)
     with open("data.csv") as r:
         x,y = prepare_xy(r.readlines())
     val_split = int(len(x) * 0.8)
