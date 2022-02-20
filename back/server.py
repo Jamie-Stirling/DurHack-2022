@@ -1,6 +1,6 @@
 
 from flask import Flask, request,render_template, redirect, url_for
-from ..inference.deploy import Valuator, remove_numeric
+from inference.deploy import Valuator, remove_numeric
 
 from inference.models.covert_to_currency import convert_int_to_pounds
 
