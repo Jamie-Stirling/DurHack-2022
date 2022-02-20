@@ -1,7 +1,8 @@
-
+import pickle
 from flask import Flask, request,render_template, redirect, url_for
+from inference.train import encode_x
 from inference.deploy import Valuator, remove_numeric
-
+import numpy as np
 from inference.models.covert_to_currency import convert_int_to_pounds
 
 def testStr(var): #Test for or string
@@ -30,13 +31,13 @@ def testNull(var): #Tests for blank input
         return False
 
 valuator = Valuator("group")
+keyword_map = pickle.load(open("back/inference/models/keywords.bin", "rb"))
 app = Flask(__name__)
 
 
 def runWebserver():
     app.run(debug=True)
     # starts web server
-
 
 @app.route("/", methods=['POST', 'GET'])
 def home():
@@ -62,9 +63,11 @@ def home():
 
         else:
             bedrooms = int(bedrooms)
+            
             # Find house value
             # price = calculations(postcode,bedrooms,houseType,Garden)
-            price_lower, price_upper = valuator.valuate({"district":remove_numeric(postcode.split(" ")[0])})
+            keywords = req["Keywords"].split(",")
+            price_lower, price_upper = valuator.valuate({"district":remove_numeric(postcode.split(" ")[0]), "x":encode_x(bedrooms, keywords, keyword_map)})
             price_lower = convert_int_to_pounds(int(price_lower))
             price_upper = convert_int_to_pounds(int(price_upper))
             return render_template('value.html', price_lower=price_lower, price_upper=price_upper) #Sends value of house to 2nd page

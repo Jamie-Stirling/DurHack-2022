@@ -17,7 +17,8 @@ for years in [2018, 2019, 2020, 2021]:
 
 districts = list(districts)
 np.random.shuffle(districts)
-
+def process(item):
+    return "".join(c for c in item.lower() if c in "0123456789abcdefghijklmnopqrstuvwxyz")
 with open("data.csv", "w+") as writer:
     for district in districts[:100]:
         url = "https://www.nestoria.co.uk/{}/property/buy".format(district.lower())
@@ -28,16 +29,21 @@ with open("data.csv", "w+") as writer:
 
         fp.close()
 
+        print(html_doc)
+
         soup = BeautifulSoup(html_doc, 'html.parser')
 
         listings = [l for l in soup.find_all("li", {"class": "rating__new"})] + [l for l in soup.find_all("div", {"class": " rating__new"})]
 
         for listing in listings:
             try:
-                rooms = listing.find("span", {"itemprop":"numberOfRooms"}).text
-                price = listing.find("div", {"class":"result__details__price"}).text
+                rooms = process(listing.find("span", {"itemprop":"numberOfRooms"}).text)
+                price = process(listing.find("div", {"class":"result__details__price"}).text)
 
                 items = [i.text for i in listing.find_all("span", {"class":"summary-item"})][2:]
-                line = price + "," + rooms + "," + ",".join(items)
+                line = price + "," + rooms + "," + ",".join([process(item) for item in items]) + "\n"
+                
+                writer.write(line)
             except Exception as e:
+                print(e)
                 pass

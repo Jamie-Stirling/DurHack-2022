@@ -1,37 +1,64 @@
 import pickle
 import numpy as np
-from sklearn.linear_model import LinearRegression
+from sklearn.neural_network import MLPRegressor
 import matplotlib.pyplot as plt
 from datetime import datetime
 
-from deploy import remove_numeric
+try:
+    from inference.deploy import remove_numeric
+except:
+    from deploy import remove_numeric
 
-dummy_x = [ [6, 1],
-            [5, 0],
-            [3, 0],
-            [5, 1],
-            [2, 0]]
 
-dummy_y = [1350000, 650000, 200000, 400000, 350000]
+def encode_x(bedrooms, keywords, keyword_map):
+    arr = [0] * len(keyword_map)
+    for keyword in keywords:
+        if keyword in keyword_map:
+            arr[keyword_map[keyword]] = 1
+    return np.array([float(bedrooms)] + arr)
 
 def prepare_xy(lines):
     x = []
     y = []
     keyword_map = {}
+    lines = [line for line in lines]
     for line in lines:
         spl = line.split(",")
         price = int(spl[0])
-        rooms = int(spl[0])
-        x.append([rooms])
+        rooms = int(spl[1])
+        keywords = spl[2:]
+        for keyword in keywords:
+            if keyword not in keyword_map:
+                keyword_map[keyword] = len(keyword_map)
+        # encode binary features
+    for line in lines:
+        spl = line.split(",")
+        keywords = spl[2:]
+        x.append(encode_x(rooms, keywords, keyword_map))
+        
+        price = int(spl[0])
         y.append(price)
+    # dump keyword map
+    with open("back/inference/models/keywords.bin", "wb") as file:
+        pickle.dump(keyword_map, file)
+    return np.array(x), np.array(y)
 
 def train_linear():
-    model = LinearRegression()
+    model = MLPRegressor((50,100), max_iter=1000)
+    with open("data.csv") as r:
+        x,y = prepare_xy(r.readlines())
+    val_split = int(len(x) * 0.8)
+    x_train, y_train = x[:val_split], y[:val_split]
+    
+    x_val, y_val = x[val_split:], y[val_split:]
 
-    model.fit(dummy_x, np.log(dummy_y))
+    
+    model.fit(x_train, np.log(y_train), )
+    val_error = np.sqrt(np.mean((np.log(y_val) - model.predict(x_val)) ** 2))
+    print(val_error)
 
     # TODO: Validate/test, save testing metadata for confidence intervals
-    with open("inference/models/linear.bin", "wb") as file:
+    with open("back/inference/models/linear.bin", "wb") as file:
         pickle.dump(model, file)
 
 
@@ -75,8 +102,8 @@ def train_groups():
     prices = np.array(prices)    
 
     with open("inference/models/group.bin", "wb") as file:
-            pickle.dump(group_model, file)
+        pickle.dump(group_model, file)
 
 if __name__ == "__main__":
     train_linear()
-    train_groups()
+    print("trained")
