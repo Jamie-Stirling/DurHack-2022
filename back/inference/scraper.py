@@ -15,29 +15,29 @@ for years in [2018, 2019, 2020, 2021]:
                 district = postcode.split(" ")[0]
                 districts.add(district)
 
-
-
 districts = list(districts)
 np.random.shuffle(districts)
-for district in districts[:100]:
-    url = "https://www.nestoria.co.uk/{}/property/buy".format(district.lower())
-    fp = urllib.request.urlopen(url)
 
-    mybytes = fp.read()
-    html_doc =  mybytes.decode("utf8")
+with open("data.csv", "w+") as writer:
+    for district in districts[:100]:
+        url = "https://www.nestoria.co.uk/{}/property/buy".format(district.lower())
+        fp = urllib.request.urlopen(url)
 
-    fp.close()
+        mybytes = fp.read()
+        html_doc =  mybytes.decode("utf8")
 
-    soup = BeautifulSoup(html_doc, 'html.parser')
+        fp.close()
 
-    listings = [l for l in soup.find_all("li", {"class": "rating__new"})] + [l for l in soup.find_all("div", {"class": " rating__new"})]
+        soup = BeautifulSoup(html_doc, 'html.parser')
 
-    for listing in listings:
-        try:
-            rooms = listing.find("span", {"itemprop":"numberOfRooms"}).text
-            price = listing.find("div", {"class":"result__details__price"}).text
+        listings = [l for l in soup.find_all("li", {"class": "rating__new"})] + [l for l in soup.find_all("div", {"class": " rating__new"})]
 
-            items = [i.text for i in listing.find_all("span", {"class":"summary-item"})][2:]
-            line = rooms + "," + price + str(items)
-        except Exception as e:
-            pass
+        for listing in listings:
+            try:
+                rooms = listing.find("span", {"itemprop":"numberOfRooms"}).text
+                price = listing.find("div", {"class":"result__details__price"}).text
+
+                items = [i.text for i in listing.find_all("span", {"class":"summary-item"})][2:]
+                line = price + "," + rooms + "," + ",".join(items)
+            except Exception as e:
+                pass

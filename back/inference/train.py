@@ -14,6 +14,17 @@ dummy_x = [ [6, 1],
 
 dummy_y = [1350000, 650000, 200000, 400000, 350000]
 
+def prepare_xy(lines):
+    x = []
+    y = []
+    keyword_map = {}
+    for line in lines:
+        spl = line.split(",")
+        price = int(spl[0])
+        rooms = int(spl[0])
+        x.append([rooms])
+        y.append(price)
+
 def train_linear():
     model = LinearRegression()
 
