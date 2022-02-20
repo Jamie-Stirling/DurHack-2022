@@ -1,4 +1,5 @@
 import pickle
+import os
 from flask import Flask, request,render_template, redirect, url_for
 from inference.train import encode_x
 from inference.deploy import Valuator, remove_numeric
@@ -36,7 +37,7 @@ app = Flask(__name__)
 
 
 def runWebserver():
-    app.run(debug=True)
+    app.run(debug=True, port=os.environ.get("PORT", 5000))
     # starts web server
 
 @app.route("/", methods=['POST', 'GET'])
