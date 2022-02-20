@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>DAOS maps</title>
+    <center>
+        <form action="/" method="POST">
+            <input type="text" placeholder="Postcode" id="Postcode" name="Postcode"/><br><br>
+            <input type="text" placeholder="Number of Bedrooms" id="Bedrooms" name="Bedrooms"/><br><br>
+            <div class="dropdown">
+
+                <select name="HouseType" id="HouseType">
+                    <option value="">House Type</option>
+                    <option value="Detatched">Detatched</option>
+                    <option value="Semi-Detatched">Semi-Detatched</option>
+                    <option value="Terrace">Terrace</option>
+                    <option value="EndTerrace">End of terrace</option>
+                </select>
+
+                <select name="Garden" id="Garden">
+                    <option value="">Does it have a garden?</option>
+                    <option value=True>Yes</option>
+                    <option value=False>No</option>
+                </select>
+
+            </div>
+
+
+            <input type="submit" value="Submit" />
+        </form>
+        <br>
+        {% if error %}
+        <p style="font-family:Arial;color:red" class="error">{{ error }}</p>
+        {% endif %}
+    </center>
+</head>
+<body>
+
+</body>
+</html>
