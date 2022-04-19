@@ -140,6 +140,7 @@ def train_groups():
 
     with open("inference/models/group.bin", "wb") as file:
         pickle.dump(group_model, file)
+    
 
 if __name__ == "__main__":
     train_linear()
