@@ -3,6 +3,8 @@ import numpy as np
 from sklearn.neural_network import MLPRegressor
 import matplotlib.pyplot as plt
 from datetime import datetime
+from sklearn.ensemble import GradientBoostingRegressor
+import pandas as pd
 
 try:
     from inference.deploy import remove_numeric
@@ -60,8 +62,41 @@ def train_linear():
     print(val_error)
 
     # TODO: Validate/test, save testing metadata for confidence intervals
+    
+    # adding prediction intervals using the Gradient Boosting Regresso
+
+    l_alpha = 0.1 # where 10% or less of the values lie
+    u_alpha = 0.9 # where 90% or more of the values lie
+
+    l_model = GradientBoostingRegressor(loss="quantile", alpha=l_alpha)
+    m_model = GradientBoostingRegressor(loss="squared_error") # uses default loss
+    u_model = GradientBoostingRegressor(loss="quantile",alpha=u_alpha)
+
+    # fits the models
+    l_model.fit(x_train, y_train)
+    m_model.fit(x_train,y_train)
+    u_model.fit(x_train, y_train)
+
+    # add actual values from the test set,
+
+    prediction_table = pd.DataFrame(y_val)
+
+    #predict,
+
+    prediction_table['lower'] = l_model.predict(x_val)
+    prediction_table['mid'] = m_model.predict(x_val)
+    prediction_table['upper'] = u_model.predict(x_val)
+
+    print(prediction_table)
+
     with open("back/inference/models/linear.bin", "wb") as file:
         pickle.dump(model, file)
+    file.close()
+    
+    with open("back/inference/models/confidence_intervals.bin", "wb") as f:
+        pickle.dump(prediction_table, f)
+    f.close()
+
 
 
 def train_groups():
@@ -105,7 +140,10 @@ def train_groups():
 
     with open("inference/models/group.bin", "wb") as file:
         pickle.dump(group_model, file)
+    
 
 if __name__ == "__main__":
     train_linear()
     print("trained")
+    train_groups()
+    print("groups trained")

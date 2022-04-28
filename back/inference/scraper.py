@@ -1,19 +1,22 @@
 import urllib.request
 from bs4 import BeautifulSoup
 import numpy as np
+import pandas as pd
 
 districts = set()
 
-for years in [2018, 2019, 2020, 2021]:
-    with open("inference/data/pp-{}.csv".format(years)) as r:
-        lines = [l for l in r.readlines()]
-        for line in lines[:50]:
-            spl = line.split(",")
-            postcode = spl[3][1:-1]
+# uses pandas to get the unique postcodes from the dataset
+districts = list()
 
-            if postcode != "":
-                district = postcode.split(" ")[0]
-                districts.add(district)
+dataset = pd.read_csv("Uk_property_price_2021.csv")  
+
+df = pd.DataFrame(dataset)
+
+postcode_list = df['Postcode District'].tolist() # finds the list of all postcodes in the data set
+
+for i in postcode_list: # makes sure that the postcodes are unique, don't want to find properties that you have already found
+    if i not in districts:
+        districts.append(i)
 
 districts = list(districts)
 np.random.shuffle(districts)
